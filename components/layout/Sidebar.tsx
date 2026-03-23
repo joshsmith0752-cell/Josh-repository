@@ -12,8 +12,9 @@ const navItems = [
   { href: '/skills',       label: 'Skills',       icon: '⭐' },
   { href: '/practices',    label: 'Practices',    icon: '📋' },
   { href: '/competitions', label: 'Competitions', icon: '🏆' },
-  { href: '/routine',      label: 'Routine',      icon: '💃' },
-  { href: '/icu-rules',    label: 'ICU Rules',    icon: '📖' },
+  { href: '/routine',          label: 'Routine',        icon: '💃' },
+  { href: '/routine-builder',  label: 'AI Routine',     icon: '✨' },
+  { href: '/icu-rules',        label: 'ICU Rules',      icon: '📖' },
 ]
 
 export default function Sidebar() {
