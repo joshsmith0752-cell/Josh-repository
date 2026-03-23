@@ -155,7 +155,7 @@ export default function RoutinePage() {
           <p className="text-gray-400 text-sm mt-1">Click an athlete → select role → click on the floor to place</p>
         </div>
         <button onClick={saveRoutine}
-          className="glass-red text-white font-bold px-5 py-2 rounded-xl text-sm transition hover:bg-red-600/30">
+          className="btn-red px-5 py-2 text-sm">
           {saved ? '✓ Saved!' : 'Save Routine'}
         </button>
       </div>
@@ -166,8 +166,8 @@ export default function RoutinePage() {
           <button key={s} onClick={() => setActiveSection(s)}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
               activeSection === s
-                ? 'glass-red text-white'
-                : 'glass text-gray-400 hover:text-white'
+                ? 'bg-red-600 text-white shadow-lg shadow-red-600/40'
+                : 'card text-gray-400 hover:text-white hover:bg-gray-700'
             }`}>
             {s}
             {placements[s]?.length > 0 && (
@@ -184,7 +184,7 @@ export default function RoutinePage() {
         <div className="xl:col-span-1 space-y-4">
 
           {/* Role selector */}
-          <div className="glass rounded-2xl p-4">
+          <div className="card rounded-2xl p-4">
             <p className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-semibold">Select Role</p>
             <div className="flex flex-wrap gap-2">
               {ROLES.map(role => {
@@ -193,7 +193,7 @@ export default function RoutinePage() {
                   <button key={role} onClick={() => setSelectedRole(role)}
                     style={selectedRole === role ? { background: c.bg, borderColor: c.border, color: c.text, border: '1px solid' } : {}}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                      selectedRole === role ? '' : 'glass text-gray-400 hover:text-white'
+                      selectedRole === role ? '' : 'card text-gray-400 hover:text-white hover:bg-gray-700'
                     }`}>
                     {role}
                   </button>
@@ -204,7 +204,7 @@ export default function RoutinePage() {
 
           {/* Pending placement indicator */}
           {pendingAthlete && (
-            <div className="glass-red rounded-2xl p-4 text-center">
+            <div className="card border-red-700 rounded-2xl p-4 text-center bg-red-900/20">
               <p className="text-red-200 text-sm font-semibold">📍 Placing</p>
               <p className="text-white font-bold mt-1">{pendingAthlete.name}</p>
               <p className="text-red-300 text-xs mt-0.5">as {selectedRole}</p>
@@ -215,8 +215,8 @@ export default function RoutinePage() {
           )}
 
           {/* Athlete roster */}
-          <div className="glass rounded-2xl overflow-hidden">
-            <div className="px-4 py-3 border-b border-white/5">
+          <div className="card rounded-2xl overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-700">
               <p className="text-white font-bold text-sm">Roster</p>
             </div>
             <div className="max-h-72 overflow-y-auto">
@@ -229,7 +229,7 @@ export default function RoutinePage() {
                   <div key={athlete.id}
                     onClick={() => !isPlaced && setPendingAthlete(isPending ? null : athlete)}
                     className={`flex items-center justify-between px-4 py-3 transition cursor-pointer ${
-                      i < athletes.length - 1 ? 'border-b border-white/5' : ''
+                      i < athletes.length - 1 ? 'border-b border-gray-700' : ''
                     } ${isPlaced ? 'opacity-40 cursor-default' : isPending ? 'bg-red-600/20' : 'hover:bg-white/5'}`}>
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
@@ -252,7 +252,7 @@ export default function RoutinePage() {
           </div>
 
           {/* Legend */}
-          <div className="glass rounded-2xl p-4">
+          <div className="card rounded-2xl p-4">
             <p className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-semibold">Legend</p>
             <div className="space-y-1.5">
               {['Flyer', 'Main Base', 'Back Spot', 'Tumbler', 'Front Row'].map(role => {
@@ -274,7 +274,7 @@ export default function RoutinePage() {
             <h3 className="text-white font-bold">{activeSection} — Floor View</h3>
             {current.length > 0 && (
               <button onClick={clearSection}
-                className="text-xs text-gray-500 hover:text-red-400 transition px-3 py-1 glass rounded-lg">
+                className="text-xs text-gray-400 hover:text-red-400 transition px-3 py-1 bg-gray-700 rounded-lg">
                 Clear section
               </button>
             )}
@@ -379,7 +379,7 @@ export default function RoutinePage() {
             {/* Placing hint */}
             {pendingAthlete && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="glass-red rounded-xl px-4 py-2 opacity-80">
+                <div className="bg-red-600/80 rounded-xl px-4 py-2">
                   <p className="text-white text-sm font-semibold">Click to place {pendingAthlete.name.split(' ')[0]}</p>
                 </div>
               </div>

@@ -3,57 +3,95 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0a0f;
+  --background: #1f2937;
   --foreground: #f9fafb;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: #1f2937;
   font-family: Arial, Helvetica, sans-serif;
   min-height: 100vh;
 }
 
-/* Glassmorphism base background */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(ellipse at 15% 20%, rgba(220, 38, 38, 0.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 75%, rgba(180, 20, 20, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(30, 10, 10, 0.8) 0%, transparent 80%),
-    linear-gradient(135deg, #0a0a0f 0%, #130808 50%, #0a0a0f 100%);
-  pointer-events: none;
-}
-
-/* Glass card utility */
 @layer components {
-  .glass {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+  /* Standard card — solid grey */
+  .card {
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 1rem;
   }
 
-  .glass-strong {
-    background: rgba(255, 255, 255, 0.07);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+  /* Red button with glow on hover */
+  .btn-red {
+    background: #dc2626;
+    color: #ffffff;
+    font-weight: 700;
+    border-radius: 0.75rem;
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  .btn-red:hover {
+    background: #b91c1c;
+    box-shadow: 0 0 18px rgba(220, 38, 38, 0.55);
+  }
+  .btn-red:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* Grey secondary button */
+  .btn-grey {
+    background: #374151;
+    color: #f9fafb;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    transition: background 0.15s;
+  }
+  .btn-grey:hover {
+    background: #4b5563;
+  }
+
+  /* Input fields */
+  .input {
+    background: #1f2937;
+    border: 1px solid #4b5563;
+    color: #f9fafb;
+    border-radius: 0.75rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .input::placeholder {
+    color: #6b7280;
+  }
+  .input:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.25);
+  }
+
+  /* Glass kept only for sidebar */
+  .glass {
+    background: rgba(17, 24, 39, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid #374151;
   }
 
   .glass-red {
     background: rgba(220, 38, 38, 0.15);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(220, 38, 38, 0.3);
+    border: 1px solid rgba(220, 38, 38, 0.35);
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .glow-red {
+    box-shadow: 0 0 18px rgba(220, 38, 38, 0.55);
   }
 }

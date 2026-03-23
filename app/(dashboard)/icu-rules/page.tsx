@@ -1,8 +1,7 @@
 export default function ICURulesPage() {
   const sections = [
     {
-      title: 'General Competition Rules',
-      icon: '📋',
+      title: 'General Competition Rules', icon: '📋',
       rules: [
         'Routine length: 2 minutes 30 seconds maximum for most divisions.',
         'Music must not contain explicit lyrics. Edited versions must be clean.',
@@ -15,8 +14,7 @@ export default function ICURulesPage() {
       ],
     },
     {
-      title: 'Stunting Rules',
-      icon: '🤸',
+      title: 'Stunting Rules', icon: '🤸',
       rules: [
         'All extended stunts (above prep level) require a spotter at all times.',
         'Flyers must be caught by at least two bases during dismounts.',
@@ -30,8 +28,7 @@ export default function ICURulesPage() {
       ],
     },
     {
-      title: 'Tumbling Rules',
-      icon: '🔄',
+      title: 'Tumbling Rules', icon: '🔄',
       rules: [
         'All aerial skills must be performed on a sprung floor or approved surface.',
         'Standing back tucks are prohibited in Levels 1–2.',
@@ -44,8 +41,7 @@ export default function ICURulesPage() {
       ],
     },
     {
-      title: 'Pyramid Rules',
-      icon: '🔺',
+      title: 'Pyramid Rules', icon: '🔺',
       rules: [
         'Pyramids may not exceed two-body-height.',
         'All two-high pyramid members must be connected or braced.',
@@ -57,8 +53,7 @@ export default function ICURulesPage() {
       ],
     },
     {
-      title: 'Scoring Breakdown',
-      icon: '🏆',
+      title: 'Scoring Breakdown', icon: '🏆',
       rules: [
         'Stunts & Pyramids: up to 30 points — difficulty, technique, execution.',
         'Tumbling: up to 20 points — difficulty, technique, synchronisation.',
@@ -70,8 +65,7 @@ export default function ICURulesPage() {
       ],
     },
     {
-      title: 'Safety & Deductions',
-      icon: '⚠️',
+      title: 'Safety & Deductions', icon: '⚠️',
       rules: [
         'Any illegal skill results in an automatic 5-point deduction per occurrence.',
         'A dropped stunt that hits the floor = 2-point deduction.',
@@ -83,8 +77,7 @@ export default function ICURulesPage() {
       ],
     },
     {
-      title: 'Level Guide (ICU Levels)',
-      icon: '📊',
+      title: 'Level Guide (ICU Levels)', icon: '📊',
       rules: [
         'Level 1 — Beginner: Basic stunts to prep, simple tumbling (rolls, cartwheels), no inversions.',
         'Level 2 — Novice: Prep level stunts, back walkovers, no basket tosses.',
@@ -100,21 +93,19 @@ export default function ICURulesPage() {
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-white">ICU Cheer Rules</h2>
-        <p className="text-gray-400 text-sm mt-1">
-          International Cheer Union — Competition Rules Reference Guide
-        </p>
-        <div className="mt-3 bg-yellow-900/30 border border-yellow-700/50 rounded-xl px-4 py-3 text-yellow-300 text-xs">
+        <p className="text-gray-400 text-sm mt-1">International Cheer Union — Competition Rules Reference Guide</p>
+        <div className="mt-3 bg-yellow-900/30 border border-yellow-800 rounded-xl px-4 py-3 text-yellow-300 text-xs">
           ⚠️ This is a reference guide. Always confirm current rules with the official ICU rulebook at your competition level before competing.
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {sections.map(section => (
-          <details key={section.title} className="bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden group" open>
-            <summary className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-gray-700/40 transition list-none">
+          <details key={section.title} className="card rounded-2xl overflow-hidden group" open>
+            <summary className="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-gray-700/30 transition list-none">
               <span className="text-xl">{section.icon}</span>
               <span className="text-white font-bold flex-1">{section.title}</span>
-              <span className="text-gray-500 text-sm group-open:rotate-180 transition-transform">▼</span>
+              <span className="text-gray-500 text-sm">▼</span>
             </summary>
             <div className="px-5 pb-5 border-t border-gray-700 pt-4">
               <ul className="space-y-2.5">
