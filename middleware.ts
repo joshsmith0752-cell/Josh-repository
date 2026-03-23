@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users away from login
   if (user && request.nextUrl.pathname.startsWith('/login')) {
     const url = request.nextUrl.clone()
-    url.pathname = '/my-team'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 

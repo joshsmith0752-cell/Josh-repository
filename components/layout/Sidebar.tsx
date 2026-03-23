@@ -7,14 +7,14 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 const navItems = [
+  { href: '/dashboard',    label: 'Dashboard',    icon: '📊' },
   { href: '/my-team',      label: 'My Team',      icon: '👥' },
   { href: '/attendance',   label: 'Attendance',   icon: '✅' },
   { href: '/skills',       label: 'Skills',       icon: '⭐' },
   { href: '/practices',    label: 'Practices',    icon: '📋' },
   { href: '/competitions', label: 'Competitions', icon: '🏆' },
-  { href: '/routine',          label: 'Routine',        icon: '💃' },
-  { href: '/routine-builder',  label: 'AI Routine',     icon: '✨' },
-  { href: '/icu-rules',        label: 'ICU Rules',      icon: '📖' },
+  { href: '/routine',      label: 'Routine',      icon: '💃' },
+  { href: '/icu-rules',    label: 'ICU Rules',    icon: '📖' },
 ]
 
 export default function Sidebar() {
