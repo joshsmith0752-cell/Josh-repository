@@ -65,15 +65,15 @@ export default function AuthPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="glass-strong rounded-2xl shadow-2xl overflow-hidden">
           {/* Tab switcher */}
           <div className="flex">
             <button
               onClick={() => { setMode('login'); setError(''); setSuccess('') }}
               className={`flex-1 py-4 text-sm font-semibold transition-colors ${
                 mode === 'login'
-                  ? 'bg-red-600 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:text-white'
+                  ? 'bg-red-600/80 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
               Sign In
@@ -82,8 +82,8 @@ export default function AuthPage() {
               onClick={() => { setMode('register'); setError(''); setSuccess('') }}
               className={`flex-1 py-4 text-sm font-semibold transition-colors ${
                 mode === 'register'
-                  ? 'bg-red-600 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:text-white'
+                  ? 'bg-red-600/80 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
               Register
@@ -100,7 +100,7 @@ export default function AuthPage() {
                   onChange={e => setName(e.target.value)}
                   placeholder="Coach Sarah Johnson"
                   required
-                  className="w-full bg-gray-900 border border-gray-600 text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                  className="w-full glass text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                 />
               </div>
             )}
@@ -113,7 +113,7 @@ export default function AuthPage() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="coach@example.com"
                 required
-                className="w-full bg-gray-900 border border-gray-600 text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className="w-full glass text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
               />
             </div>
 
@@ -126,7 +126,7 @@ export default function AuthPage() {
                 placeholder="••••••••"
                 required
                 minLength={6}
-                className="w-full bg-gray-900 border border-gray-600 text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                className="w-full glass text-white placeholder-gray-500 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
               />
             </div>
 

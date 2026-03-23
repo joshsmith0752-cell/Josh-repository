@@ -1,235 +1,410 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 type Athlete = { id: string; name: string; position?: string }
 
+type PlacedAthlete = {
+  athleteId: string
+  name: string
+  role: string
+  x: number // percentage 0-100
+  y: number // percentage 0-100
+}
+
 const SECTIONS = ['Opener', 'Stunts', 'Pyramid', 'Tumbling Pass', 'Dance', 'Cheer', 'Closer']
 
-const POSITIONS = [
-  'Base', 'Main Base', 'Side Base', 'Back Spot', 'Front Spot', 'Flyer',
-  'Tumbler', 'Back Tumbler', 'Front Row', 'Back Row', 'Left Side', 'Right Side',
-]
+const ROLES = ['Flyer', 'Main Base', 'Side Base', 'Back Spot', 'Front Spot', 'Tumbler', 'Front Row', 'Back Row', 'Left Side', 'Right Side', 'Center']
 
-type Formation = Record<string, string> // athleteId -> position
+const roleColors: Record<string, { bg: string; border: string; text: string; dot: string }> = {
+  'Flyer':      { bg: 'rgba(220,38,38,0.25)',   border: 'rgba(220,38,38,0.6)',   text: '#fca5a5', dot: '#dc2626' },
+  'Main Base':  { bg: 'rgba(37,99,235,0.25)',   border: 'rgba(37,99,235,0.6)',   text: '#93c5fd', dot: '#2563eb' },
+  'Side Base':  { bg: 'rgba(29,78,216,0.2)',    border: 'rgba(59,130,246,0.5)',  text: '#bfdbfe', dot: '#3b82f6' },
+  'Back Spot':  { bg: 'rgba(124,58,237,0.25)',  border: 'rgba(124,58,237,0.6)',  text: '#c4b5fd', dot: '#7c3aed' },
+  'Front Spot': { bg: 'rgba(109,40,217,0.2)',   border: 'rgba(139,92,246,0.5)', text: '#ddd6fe', dot: '#8b5cf6' },
+  'Tumbler':    { bg: 'rgba(234,179,8,0.2)',    border: 'rgba(234,179,8,0.5)',  text: '#fde68a', dot: '#eab308' },
+  'Front Row':  { bg: 'rgba(5,150,105,0.2)',    border: 'rgba(5,150,105,0.5)',  text: '#6ee7b7', dot: '#059669' },
+  'Back Row':   { bg: 'rgba(4,120,87,0.2)',     border: 'rgba(4,120,87,0.5)',   text: '#a7f3d0', dot: '#047857' },
+  'Left Side':  { bg: 'rgba(249,115,22,0.2)',   border: 'rgba(249,115,22,0.5)', text: '#fed7aa', dot: '#f97316' },
+  'Right Side': { bg: 'rgba(234,88,12,0.2)',    border: 'rgba(234,88,12,0.5)',  text: '#ffedd5', dot: '#ea580c' },
+  'Center':     { bg: 'rgba(255,255,255,0.08)', border: 'rgba(255,255,255,0.2)',text: '#e5e7eb', dot: '#9ca3af' },
+}
+
+function getRoleColor(role: string) {
+  return roleColors[role] || roleColors['Center']
+}
 
 export default function RoutinePage() {
   const supabase = createClient()
   const [athletes, setAthletes] = useState<Athlete[]>([])
   const [activeSection, setActiveSection] = useState('Opener')
-  const [formations, setFormations] = useState<Record<string, Formation>>({})
-  const [routineName, setRoutineName] = useState('2025 Routine')
+  const [placements, setPlacements] = useState<Record<string, PlacedAthlete[]>>({})
+  const [routineName, setRoutineName] = useState('Starlings 2026')
   const [saved, setSaved] = useState(false)
-  const [dragging, setDragging] = useState<string | null>(null)
+  const [draggingId, setDraggingId] = useState<string | null>(null)
+  const [selectedRole, setSelectedRole] = useState('Flyer')
+  const [pendingAthlete, setPendingAthlete] = useState<Athlete | null>(null)
+  const floorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => { loadAthletes() }, [])
+
+  useEffect(() => {
+    const stored = localStorage.getItem('cheerhub_routine_v2')
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      setRoutineName(parsed.routineName || 'Starlings 2026')
+      setPlacements(parsed.placements || {})
+    }
+  }, [])
 
   async function loadAthletes() {
     const { data } = await supabase.from('athletes').select('id, name, position').order('name')
     if (data) setAthletes(data)
   }
 
-  function getFormation(section: string): Formation {
-    return formations[section] || {}
+  function currentPlacements(): PlacedAthlete[] {
+    return placements[activeSection] || []
   }
 
-  function setPosition(section: string, athleteId: string, position: string) {
-    setFormations(prev => ({
+  function placedIds(): Set<string> {
+    return new Set(currentPlacements().map(p => p.athleteId))
+  }
+
+  // Click on floor to place selected athlete
+  function handleFloorClick(e: React.MouseEvent<HTMLDivElement>) {
+    if (!pendingAthlete) return
+    const rect = floorRef.current!.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+
+    const newPlacement: PlacedAthlete = {
+      athleteId: pendingAthlete.id,
+      name: pendingAthlete.name,
+      role: selectedRole,
+      x: Math.max(4, Math.min(96, x)),
+      y: Math.max(4, Math.min(96, y)),
+    }
+
+    setPlacements(prev => ({
       ...prev,
-      [section]: { ...getFormation(section), [athleteId]: position }
+      [activeSection]: [...(prev[activeSection] || []), newPlacement],
+    }))
+    setPendingAthlete(null)
+  }
+
+  // Drag placed athlete on the floor
+  function handleAthleteMouseDown(e: React.MouseEvent, athleteId: string) {
+    e.stopPropagation()
+    setDraggingId(athleteId)
+
+    const onMove = (me: MouseEvent) => {
+      if (!floorRef.current) return
+      const rect = floorRef.current.getBoundingClientRect()
+      const x = Math.max(4, Math.min(96, ((me.clientX - rect.left) / rect.width) * 100))
+      const y = Math.max(4, Math.min(96, ((me.clientY - rect.top) / rect.height) * 100))
+
+      setPlacements(prev => ({
+        ...prev,
+        [activeSection]: (prev[activeSection] || []).map(p =>
+          p.athleteId === athleteId ? { ...p, x, y } : p
+        ),
+      }))
+    }
+
+    const onUp = () => {
+      setDraggingId(null)
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
+
+  function removeFromFloor(athleteId: string) {
+    setPlacements(prev => ({
+      ...prev,
+      [activeSection]: (prev[activeSection] || []).filter(p => p.athleteId !== athleteId),
     }))
   }
 
-  function removeFromSection(section: string, athleteId: string) {
-    setFormations(prev => {
-      const updated = { ...getFormation(section) }
-      delete updated[athleteId]
-      return { ...prev, [section]: updated }
-    })
-  }
-
-  function getAthletePosition(section: string, athleteId: string) {
-    return formations[section]?.[athleteId] || null
-  }
-
-  function athletesInSection(section: string) {
-    const f = getFormation(section)
-    return athletes.filter(a => f[a.id])
-  }
-
-  function unassignedAthletes(section: string) {
-    const f = getFormation(section)
-    return athletes.filter(a => !f[a.id])
-  }
-
-  function positionColor(pos: string) {
-    if (pos.includes('Flyer')) return 'bg-red-600/30 border-red-500/50 text-red-200'
-    if (pos.includes('Base')) return 'bg-blue-600/30 border-blue-500/50 text-blue-200'
-    if (pos.includes('Spot')) return 'bg-purple-600/30 border-purple-500/50 text-purple-200'
-    if (pos.includes('Tumbl')) return 'bg-yellow-600/30 border-yellow-500/50 text-yellow-200'
-    return 'bg-gray-700 border-gray-600 text-gray-200'
+  function clearSection() {
+    setPlacements(prev => ({ ...prev, [activeSection]: [] }))
   }
 
   function saveRoutine() {
-    localStorage.setItem('cheerhub_routine', JSON.stringify({ routineName, formations }))
+    localStorage.setItem('cheerhub_routine_v2', JSON.stringify({ routineName, placements }))
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
 
-  useEffect(() => {
-    const saved = localStorage.getItem('cheerhub_routine')
-    if (saved) {
-      const parsed = JSON.parse(saved)
-      setRoutineName(parsed.routineName || '2025 Routine')
-      setFormations(parsed.formations || {})
-    }
-  }, [])
-
-  const currentFormation = getFormation(activeSection)
-  const assigned = athletesInSection(activeSection)
-  const unassigned = unassignedAthletes(activeSection)
+  const placed = placedIds()
+  const current = currentPlacements()
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div className="max-w-5xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
         <div>
           <input
             value={routineName}
             onChange={e => setRoutineName(e.target.value)}
-            className="text-2xl font-bold text-white bg-transparent border-b border-transparent hover:border-gray-600 focus:border-red-500 focus:outline-none pb-0.5"
+            className="text-2xl font-bold text-white bg-transparent border-b border-transparent hover:border-white/20 focus:border-red-500 focus:outline-none pb-0.5"
           />
-          <p className="text-gray-400 text-sm mt-1">Assign athletes to positions for each section</p>
+          <p className="text-gray-400 text-sm mt-1">Click an athlete → select role → click on the floor to place</p>
         </div>
-        <button
-          onClick={saveRoutine}
-          className="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-xl text-sm transition"
-        >
+        <button onClick={saveRoutine}
+          className="glass-red text-white font-bold px-5 py-2 rounded-xl text-sm transition hover:bg-red-600/30">
           {saved ? '✓ Saved!' : 'Save Routine'}
         </button>
       </div>
 
       {/* Section tabs */}
-      <div className="flex gap-2 flex-wrap mb-6">
+      <div className="flex gap-2 flex-wrap mb-5">
         {SECTIONS.map(s => (
-          <button
-            key={s}
-            onClick={() => setActiveSection(s)}
+          <button key={s} onClick={() => setActiveSection(s)}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
               activeSection === s
-                ? 'bg-red-600 text-white'
-                : 'bg-gray-800 border border-gray-700 text-gray-400 hover:text-white'
-            }`}
-          >
+                ? 'glass-red text-white'
+                : 'glass text-gray-400 hover:text-white'
+            }`}>
             {s}
-            {formations[s] && Object.keys(formations[s]).length > 0 && (
+            {placements[s]?.length > 0 && (
               <span className="ml-2 bg-red-900/60 text-red-300 text-xs px-1.5 rounded-full">
-                {Object.keys(formations[s]).length}
+                {placements[s].length}
               </span>
             )}
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Formation board */}
-        <div>
-          <h3 className="text-white font-bold mb-3">{activeSection} — Formation</h3>
-          {assigned.length === 0 ? (
-            <div className="bg-gray-800 border-2 border-dashed border-gray-600 rounded-2xl p-8 text-center">
-              <p className="text-gray-500 text-sm">No athletes assigned yet.<br />Pick from the roster on the right.</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {assigned.map(athlete => {
-                const pos = currentFormation[athlete.id]
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+        {/* Left panel — roster + role picker */}
+        <div className="xl:col-span-1 space-y-4">
+
+          {/* Role selector */}
+          <div className="glass rounded-2xl p-4">
+            <p className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-semibold">Select Role</p>
+            <div className="flex flex-wrap gap-2">
+              {ROLES.map(role => {
+                const c = getRoleColor(role)
                 return (
-                  <div key={athlete.id} className={`flex items-center justify-between px-4 py-3 rounded-xl border ${positionColor(pos)}`}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gray-900/50 rounded-full flex items-center justify-center text-sm font-bold">
-                        {athlete.name.charAt(0)}
-                      </div>
-                      <span className="font-medium text-sm">{athlete.name}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <select
-                        value={pos}
-                        onChange={e => setPosition(activeSection, athlete.id, e.target.value)}
-                        className="bg-gray-900/60 border border-gray-600 text-white rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-red-500"
-                      >
-                        {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
-                      </select>
-                      <button
-                        onClick={() => removeFromSection(activeSection, athlete.id)}
-                        className="text-gray-500 hover:text-red-400 transition text-lg leading-none"
-                      >×</button>
-                    </div>
-                  </div>
+                  <button key={role} onClick={() => setSelectedRole(role)}
+                    style={selectedRole === role ? { background: c.bg, borderColor: c.border, color: c.text, border: '1px solid' } : {}}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                      selectedRole === role ? '' : 'glass text-gray-400 hover:text-white'
+                    }`}>
+                    {role}
+                  </button>
                 )
               })}
+            </div>
+          </div>
+
+          {/* Pending placement indicator */}
+          {pendingAthlete && (
+            <div className="glass-red rounded-2xl p-4 text-center">
+              <p className="text-red-200 text-sm font-semibold">📍 Placing</p>
+              <p className="text-white font-bold mt-1">{pendingAthlete.name}</p>
+              <p className="text-red-300 text-xs mt-0.5">as {selectedRole}</p>
+              <p className="text-gray-400 text-xs mt-2">Click anywhere on the floor</p>
+              <button onClick={() => setPendingAthlete(null)}
+                className="mt-2 text-xs text-gray-500 hover:text-red-400 transition">Cancel</button>
             </div>
           )}
 
-          {/* Position legend */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            {[
-              { label: 'Flyer', cls: 'bg-red-600/20 text-red-300 border border-red-600/30' },
-              { label: 'Base', cls: 'bg-blue-600/20 text-blue-300 border border-blue-600/30' },
-              { label: 'Spotter', cls: 'bg-purple-600/20 text-purple-300 border border-purple-600/30' },
-              { label: 'Tumbler', cls: 'bg-yellow-600/20 text-yellow-300 border border-yellow-600/30' },
-            ].map(l => (
-              <span key={l.label} className={`text-xs px-2 py-0.5 rounded-full ${l.cls}`}>{l.label}</span>
-            ))}
-          </div>
-        </div>
-
-        {/* Roster panel */}
-        <div>
-          <h3 className="text-white font-bold mb-3">Roster — Add to {activeSection}</h3>
-          {athletes.length === 0 ? (
-            <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6 text-center">
-              <p className="text-gray-400 text-sm">No athletes found. Add athletes to the Roster first.</p>
+          {/* Athlete roster */}
+          <div className="glass rounded-2xl overflow-hidden">
+            <div className="px-4 py-3 border-b border-white/5">
+              <p className="text-white font-bold text-sm">Roster</p>
             </div>
-          ) : (
-            <div className="bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden">
-              {athletes.map((athlete, i) => {
-                const isAssigned = !!currentFormation[athlete.id]
+            <div className="max-h-72 overflow-y-auto">
+              {athletes.length === 0 ? (
+                <p className="text-gray-400 text-sm p-4">No athletes found.</p>
+              ) : athletes.map((athlete, i) => {
+                const isPlaced = placed.has(athlete.id)
+                const isPending = pendingAthlete?.id === athlete.id
                 return (
-                  <div
-                    key={athlete.id}
-                    className={`flex items-center justify-between px-4 py-3 transition ${
-                      i < athletes.length - 1 ? 'border-b border-gray-700' : ''
-                    } ${isAssigned ? 'opacity-40' : 'hover:bg-gray-700/40'}`}
-                  >
+                  <div key={athlete.id}
+                    onClick={() => !isPlaced && setPendingAthlete(isPending ? null : athlete)}
+                    className={`flex items-center justify-between px-4 py-3 transition cursor-pointer ${
+                      i < athletes.length - 1 ? 'border-b border-white/5' : ''
+                    } ${isPlaced ? 'opacity-40 cursor-default' : isPending ? 'bg-red-600/20' : 'hover:bg-white/5'}`}>
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                        isPending ? 'bg-red-600 text-white' : 'bg-white/10 text-white'
+                      }`}>
                         {athlete.name.charAt(0)}
                       </div>
-                      <div>
-                        <span className="text-white text-sm font-medium">{athlete.name}</span>
-                        {athlete.position && (
-                          <span className="text-gray-500 text-xs ml-2">{athlete.position}</span>
-                        )}
-                      </div>
+                      <span className="text-white text-sm">{athlete.name}</span>
                     </div>
-                    {isAssigned ? (
-                      <span className="text-xs text-gray-500">Assigned</span>
-                    ) : (
-                      <select
-                        defaultValue=""
-                        onChange={e => {
-                          if (e.target.value) setPosition(activeSection, athlete.id, e.target.value)
-                          e.target.value = ''
-                        }}
-                        className="bg-red-600 hover:bg-red-700 text-white rounded-lg px-2 py-1 text-xs focus:outline-none cursor-pointer"
-                      >
-                        <option value="" disabled>+ Assign</option>
-                        {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
-                      </select>
-                    )}
+                    {isPlaced
+                      ? <span className="text-xs text-gray-500">On floor</span>
+                      : isPending
+                        ? <span className="text-xs text-red-400">Placing...</span>
+                        : <span className="text-xs text-gray-500">+ Place</span>
+                    }
                   </div>
                 )
               })}
+            </div>
+          </div>
+
+          {/* Legend */}
+          <div className="glass rounded-2xl p-4">
+            <p className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-semibold">Legend</p>
+            <div className="space-y-1.5">
+              {['Flyer', 'Main Base', 'Back Spot', 'Tumbler', 'Front Row'].map(role => {
+                const c = getRoleColor(role)
+                return (
+                  <div key={role} className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ background: c.dot }} />
+                    <span className="text-xs text-gray-300">{role}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Right panel — visual floor */}
+        <div className="xl:col-span-2">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-white font-bold">{activeSection} — Floor View</h3>
+            {current.length > 0 && (
+              <button onClick={clearSection}
+                className="text-xs text-gray-500 hover:text-red-400 transition px-3 py-1 glass rounded-lg">
+                Clear section
+              </button>
+            )}
+          </div>
+
+          {/* The floor */}
+          <div
+            ref={floorRef}
+            onClick={handleFloorClick}
+            className={`relative rounded-2xl overflow-hidden select-none ${pendingAthlete ? 'cursor-crosshair' : 'cursor-default'}`}
+            style={{
+              width: '100%',
+              paddingBottom: '62%',
+              background: 'linear-gradient(180deg, rgba(220,38,38,0.05) 0%, rgba(0,0,0,0.3) 100%)',
+              border: pendingAthlete ? '2px dashed rgba(220,38,38,0.6)' : '1px solid rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(12px)',
+            }}
+          >
+            {/* Floor markings */}
+            <div className="absolute inset-0">
+              {/* Center line */}
+              <div className="absolute left-1/2 top-[10%] bottom-[10%] w-px bg-white/5" />
+              {/* Horizontal thirds */}
+              <div className="absolute left-[10%] right-[10%] top-1/3 h-px bg-white/5" />
+              <div className="absolute left-[10%] right-[10%] top-2/3 h-px bg-white/5" />
+              {/* Border inner */}
+              <div className="absolute inset-[8%] border border-white/5 rounded-xl" />
+              {/* Floor label */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-white/10 text-xs font-semibold tracking-widest uppercase">
+                Performance Floor
+              </div>
+              {/* Audience label */}
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 text-white/15 text-xs tracking-widest uppercase">
+                Judges / Audience
+              </div>
+            </div>
+
+            {/* Placed athletes */}
+            {current.map(p => {
+              const c = getRoleColor(p.role)
+              const isDragging = draggingId === p.athleteId
+              return (
+                <div
+                  key={p.athleteId}
+                  onMouseDown={e => handleAthleteMouseDown(e, p.athleteId)}
+                  style={{
+                    position: 'absolute',
+                    left: `${p.x}%`,
+                    top: `${p.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    cursor: isDragging ? 'grabbing' : 'grab',
+                    zIndex: isDragging ? 50 : 10,
+                    userSelect: 'none',
+                  }}
+                  className="group"
+                >
+                  {/* Dot */}
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shadow-lg transition-transform group-hover:scale-110"
+                    style={{
+                      background: c.bg,
+                      border: `2px solid ${c.border}`,
+                      color: c.text,
+                      boxShadow: `0 0 12px ${c.dot}40`,
+                    }}
+                  >
+                    {p.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                  </div>
+                  {/* Name label */}
+                  <div
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-1 text-center pointer-events-none"
+                    style={{ minWidth: '60px' }}
+                  >
+                    <span className="text-white text-xs font-medium drop-shadow-lg block leading-tight">
+                      {p.name.split(' ')[0]}
+                    </span>
+                    <span className="text-xs leading-tight block" style={{ color: c.text, fontSize: '10px' }}>
+                      {p.role}
+                    </span>
+                  </div>
+                  {/* Remove button */}
+                  <button
+                    onMouseDown={e => e.stopPropagation()}
+                    onClick={e => { e.stopPropagation(); removeFromFloor(p.athleteId) }}
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 rounded-full text-white text-xs items-center justify-center hidden group-hover:flex leading-none"
+                    style={{ fontSize: '10px' }}
+                  >×</button>
+                </div>
+              )
+            })}
+
+            {/* Empty state */}
+            {current.length === 0 && !pendingAthlete && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-4xl mb-2 opacity-20">📍</div>
+                  <p className="text-white/20 text-sm">Select an athlete from the roster,<br />then click to place them on the floor</p>
+                </div>
+              </div>
+            )}
+
+            {/* Placing hint */}
+            {pendingAthlete && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="glass-red rounded-xl px-4 py-2 opacity-80">
+                  <p className="text-white text-sm font-semibold">Click to place {pendingAthlete.name.split(' ')[0]}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Placed list summary */}
+          {current.length > 0 && (
+            <div className="mt-4 glass rounded-2xl p-4">
+              <p className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-semibold">
+                {activeSection} — {current.length} athlete{current.length !== 1 ? 's' : ''} placed
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {current.map(p => {
+                  const c = getRoleColor(p.role)
+                  return (
+                    <div key={p.athleteId}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium"
+                      style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}>
+                      <div className="w-2 h-2 rounded-full" style={{ background: c.dot }} />
+                      {p.name.split(' ')[0]} · {p.role}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           )}
         </div>

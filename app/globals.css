@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: #111827;
+  --background: #0a0a0f;
   --foreground: #f9fafb;
 }
 
@@ -11,6 +11,45 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Glassmorphism base background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(220, 38, 38, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 75%, rgba(180, 20, 20, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(30, 10, 10, 0.8) 0%, transparent 80%),
+    linear-gradient(135deg, #0a0a0f 0%, #130808 50%, #0a0a0f 100%);
+  pointer-events: none;
+}
+
+/* Glass card utility */
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .glass-red {
+    background: rgba(220, 38, 38, 0.15);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+  }
 }
 
 @layer utilities {
