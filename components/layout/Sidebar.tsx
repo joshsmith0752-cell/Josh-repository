@@ -50,7 +50,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-64 min-h-screen flex-col border-r border-[rgba(60,60,80,0.5)] bg-[rgba(10,11,16,0.85)] backdrop-blur-md">
+      <aside className="hidden md:flex w-64 min-h-screen flex-col border-r border-[rgba(60,60,80,0.5)] bg-[rgba(10,11,16,0.6)] backdrop-blur-md">
         <div className="px-6 py-6 border-b border-[rgba(60,60,80,0.4)]">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-600/50">
@@ -74,7 +74,7 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-[rgba(10,11,16,0.92)] backdrop-blur-md border-b border-[rgba(60,60,80,0.5)] flex items-center justify-between px-4 py-3">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-[rgba(10,11,16,0.75)] backdrop-blur-md border-b border-[rgba(60,60,80,0.5)] flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow shadow-red-600/50">
             <span>📣</span>
@@ -98,7 +98,7 @@ export default function Sidebar() {
       {/* Mobile drawer */}
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-40 flex">
-          <div className="w-72 bg-[rgba(10,11,16,0.97)] backdrop-blur-md border-r border-[rgba(60,60,80,0.5)] flex flex-col pt-16">
+          <div className="w-72 bg-[rgba(10,11,16,0.85)] backdrop-blur-md border-r border-[rgba(60,60,80,0.5)] flex flex-col pt-16">
             <nav className="flex-1 px-4 py-6 space-y-1"><NavLinks /></nav>
             <div className="px-4 py-4 border-t border-[rgba(60,60,80,0.4)]">
               <button onClick={handleSignOut}

@@ -12,30 +12,37 @@
 }
 
 /* ─── BASE ─────────────────────────────────────────────── */
-html, body {
+html {
+  min-height: 100%;
+}
+body {
   color: var(--foreground);
-  background: var(--background);
+  background: transparent;
   font-family: 'Arial', sans-serif;
   min-height: 100vh;
+  position: relative;
 }
 
 /* ─── GEOMETRIC + GRAIN BACKGROUND ─────────────────────── */
+/* Layer 1: main gradient base — fills the whole viewport */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -2;
   background:
-    /* red glow top-right */
-    radial-gradient(ellipse 60% 50% at 95% 5%, rgba(200,30,30,0.55) 0%, transparent 65%),
-    /* secondary red mid-right */
-    radial-gradient(ellipse 40% 40% at 80% 55%, rgba(180,20,20,0.25) 0%, transparent 60%),
-    /* dark grey base */
-    linear-gradient(135deg, #0d0d12 0%, #141418 40%, #1a0a0a 100%);
+    /* big red glow top-right corner */
+    radial-gradient(ellipse 70% 60% at 100% 0%, rgba(220,38,38,0.75) 0%, rgba(180,20,20,0.4) 30%, transparent 65%),
+    /* secondary red bloom mid-right */
+    radial-gradient(ellipse 50% 45% at 85% 60%, rgba(185,20,20,0.45) 0%, transparent 55%),
+    /* small accent bottom-left */
+    radial-gradient(ellipse 35% 30% at 5% 95%, rgba(160,10,10,0.3) 0%, transparent 60%),
+    /* dark charcoal base */
+    linear-gradient(135deg, #0d0d10 0%, #131318 50%, #160808 100%);
   pointer-events: none;
 }
 
-/* Geometric angular shapes — pure CSS polygons */
+/* Layer 2: geometric angular shapes on top */
 body::after {
   content: '';
   position: fixed;
@@ -43,14 +50,14 @@ body::after {
   z-index: -1;
   pointer-events: none;
   background-image:
-    /* large triangle top-right */
-    linear-gradient(135deg, transparent 60%, rgba(180,20,20,0.12) 60%, rgba(180,20,20,0.12) 65%, transparent 65%),
-    /* diagonal slash */
-    linear-gradient(155deg, transparent 45%, rgba(220,38,38,0.07) 45%, rgba(220,38,38,0.07) 47%, transparent 47%),
-    /* upper grey triangle */
-    linear-gradient(120deg, rgba(255,255,255,0.025) 0%, transparent 50%),
-    /* bottom-left fade */
-    linear-gradient(315deg, transparent 55%, rgba(100,100,120,0.06) 55%, rgba(100,100,120,0.06) 58%, transparent 58%);
+    /* large red triangle top-right */
+    linear-gradient(135deg, transparent 55%, rgba(200,30,30,0.18) 55%, rgba(200,30,30,0.18) 62%, transparent 62%),
+    /* diagonal red slash */
+    linear-gradient(158deg, transparent 42%, rgba(220,38,38,0.10) 42%, rgba(220,38,38,0.10) 45%, transparent 45%),
+    /* subtle light top-left triangle */
+    linear-gradient(125deg, rgba(255,255,255,0.04) 0%, transparent 45%),
+    /* bottom-right dark band */
+    linear-gradient(310deg, transparent 50%, rgba(80,80,100,0.07) 50%, rgba(80,80,100,0.07) 54%, transparent 54%);
 }
 
 /* SVG grain noise overlay */
@@ -74,7 +81,7 @@ body::after {
   height: 200%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.045;
+  opacity: 0.08;
   animation: grain 0.8s steps(1) infinite;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
   background-repeat: repeat;
@@ -85,19 +92,19 @@ body::after {
 @layer components {
 
   .card {
-    background: rgba(15, 17, 23, 0.82);
-    border: 1px solid rgba(60, 60, 80, 0.6);
+    background: rgba(15, 17, 23, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 1rem;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .card-red {
-    background: rgba(15, 17, 23, 0.82);
-    border: 1px solid rgba(185, 28, 28, 0.45);
+    background: rgba(15, 17, 23, 0.55);
+    border: 1px solid rgba(185, 28, 28, 0.5);
     border-radius: 1rem;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   /* Red button with glow */
