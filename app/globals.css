@@ -3,59 +3,143 @@
 @tailwind utilities;
 
 :root {
-  --background: #1f2937;
+  --background: #1a1a1f;
   --foreground: #f9fafb;
+  --card-bg: #0f1117;
+  --card-border: #2a2a35;
+  --red: #dc2626;
+  --red-dark: #b91c1c;
 }
 
-body {
+/* ─── BASE ─────────────────────────────────────────────── */
+html, body {
   color: var(--foreground);
-  background: #1f2937;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--background);
+  font-family: 'Arial', sans-serif;
   min-height: 100vh;
 }
 
+/* ─── GEOMETRIC + GRAIN BACKGROUND ─────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    /* red glow top-right */
+    radial-gradient(ellipse 60% 50% at 95% 5%, rgba(200,30,30,0.55) 0%, transparent 65%),
+    /* secondary red mid-right */
+    radial-gradient(ellipse 40% 40% at 80% 55%, rgba(180,20,20,0.25) 0%, transparent 60%),
+    /* dark grey base */
+    linear-gradient(135deg, #0d0d12 0%, #141418 40%, #1a0a0a 100%);
+  pointer-events: none;
+}
+
+/* Geometric angular shapes — pure CSS polygons */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    /* large triangle top-right */
+    linear-gradient(135deg, transparent 60%, rgba(180,20,20,0.12) 60%, rgba(180,20,20,0.12) 65%, transparent 65%),
+    /* diagonal slash */
+    linear-gradient(155deg, transparent 45%, rgba(220,38,38,0.07) 45%, rgba(220,38,38,0.07) 47%, transparent 47%),
+    /* upper grey triangle */
+    linear-gradient(120deg, rgba(255,255,255,0.025) 0%, transparent 50%),
+    /* bottom-left fade */
+    linear-gradient(315deg, transparent 55%, rgba(100,100,120,0.06) 55%, rgba(100,100,120,0.06) 58%, transparent 58%);
+}
+
+/* SVG grain noise overlay */
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10%       { transform: translate(-2%, -3%); }
+  20%       { transform: translate(3%, 2%); }
+  30%       { transform: translate(-1%, 4%); }
+  40%       { transform: translate(2%, -2%); }
+  50%       { transform: translate(-3%, 1%); }
+  60%       { transform: translate(1%, 3%); }
+  70%       { transform: translate(-2%, -1%); }
+  80%       { transform: translate(3%, -3%); }
+  90%       { transform: translate(-1%, 2%); }
+}
+
+.grain-overlay {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.045;
+  animation: grain 0.8s steps(1) infinite;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+/* ─── COMPONENTS ─────────────────────────────────────────── */
 @layer components {
-  /* Standard card — solid grey */
+
   .card {
-    background: #111827;
-    border: 1px solid #374151;
+    background: rgba(15, 17, 23, 0.82);
+    border: 1px solid rgba(60, 60, 80, 0.6);
     border-radius: 1rem;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
 
-  /* Red button with glow on hover */
+  .card-red {
+    background: rgba(15, 17, 23, 0.82);
+    border: 1px solid rgba(185, 28, 28, 0.45);
+    border-radius: 1rem;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  /* Red button with glow */
   .btn-red {
     background: #dc2626;
     color: #ffffff;
     font-weight: 700;
     border-radius: 0.75rem;
-    transition: background 0.15s, box-shadow 0.15s;
+    transition: background 0.15s, box-shadow 0.2s;
+    display: inline-block;
+    text-align: center;
   }
   .btn-red:hover {
     background: #b91c1c;
-    box-shadow: 0 0 18px rgba(220, 38, 38, 0.55);
+    box-shadow: 0 0 22px rgba(220, 38, 38, 0.65), 0 0 8px rgba(220, 38, 38, 0.3);
   }
   .btn-red:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
     box-shadow: none;
   }
 
   /* Grey secondary button */
   .btn-grey {
-    background: #374151;
+    background: rgba(55, 65, 81, 0.8);
     color: #f9fafb;
     font-weight: 600;
     border-radius: 0.75rem;
-    transition: background 0.15s;
+    border: 1px solid rgba(75, 85, 99, 0.5);
+    transition: background 0.15s, border-color 0.15s;
+    display: inline-block;
+    text-align: center;
   }
   .btn-grey:hover {
-    background: #4b5563;
+    background: rgba(75, 85, 99, 0.9);
+    border-color: rgba(107, 114, 128, 0.6);
   }
 
   /* Input fields */
   .input {
-    background: #1f2937;
-    border: 1px solid #4b5563;
+    background: rgba(10, 12, 18, 0.7);
+    border: 1px solid rgba(60, 65, 85, 0.7);
     color: #f9fafb;
     border-radius: 0.75rem;
     padding: 0.625rem 1rem;
@@ -63,35 +147,24 @@ body {
     width: 100%;
     transition: border-color 0.15s, box-shadow 0.15s;
     outline: none;
+    backdrop-filter: blur(4px);
   }
-  .input::placeholder {
-    color: #6b7280;
-  }
+  .input::placeholder { color: #4b5563; }
   .input:focus {
-    border-color: #dc2626;
-    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.25);
-  }
-
-  /* Glass kept only for sidebar */
-  .glass {
-    background: rgba(17, 24, 39, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid #374151;
+    border-color: rgba(220, 38, 38, 0.7);
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
   }
 
   .glass-red {
-    background: rgba(220, 38, 38, 0.15);
-    border: 1px solid rgba(220, 38, 38, 0.35);
+    background: rgba(220, 38, 38, 0.12);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 }
 
+/* ─── UTILITIES ────────────────────────────────────────── */
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .glow-red {
-    box-shadow: 0 0 18px rgba(220, 38, 38, 0.55);
-  }
+  .text-balance { text-wrap: balance; }
+  .glow-red { box-shadow: 0 0 22px rgba(220, 38, 38, 0.65); }
 }
