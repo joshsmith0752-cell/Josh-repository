@@ -16,7 +16,7 @@ const CATEGORIES = {
 }
 
 const statusStyles: Record<SkillStatus, string> = {
-  'Not Started': 'bg-gray-700 text-gray-300',
+  'Not Started': 'bg-white/10 text-gray-300',
   'In Progress': 'bg-yellow-900/50 text-yellow-300 border border-yellow-700',
   'Achieved':    'bg-green-900/50 text-green-300 border border-green-700',
 }
@@ -97,7 +97,7 @@ export default function SkillsPage() {
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
                   selectedAthlete === a.id
                     ? 'bg-red-600 text-white shadow-lg shadow-red-600/40'
-                    : 'bg-gray-700 border border-gray-600 text-gray-300 hover:text-white hover:bg-gray-600'
+                    : 'bg-white/10 border border-white/10 text-gray-300 hover:text-white hover:bg-white/15'
                 }`}>
                 {a.name}
               </button>
@@ -114,8 +114,8 @@ export default function SkillsPage() {
                     <button key={cat} onClick={() => setActiveCategory(cat)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
                         activeCategory === cat
-                          ? 'bg-gray-600 text-white border border-gray-500'
-                          : 'bg-gray-800 border border-gray-700 text-gray-400 hover:text-white'
+                          ? 'bg-white/15 text-white border border-white/20'
+                          : 'bg-white/5 border border-white/10 text-gray-400 hover:text-white'
                       }`}>
                       {cat}
                       <span className={`text-xs ${achieved === total ? 'text-green-400' : 'text-gray-500'}`}>{achieved}/{total}</span>
@@ -136,7 +136,7 @@ export default function SkillsPage() {
                       <span>{selectedName}'s overall progress</span>
                       <span>{achieved}/{total} skills ({pct}%)</span>
                     </div>
-                    <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                       <div className="h-full bg-red-600 rounded-full transition-all" style={{ width: `${pct}%` }} />
                     </div>
                   </div>
@@ -145,14 +145,14 @@ export default function SkillsPage() {
 
               {/* Skills list */}
               <div className="card overflow-hidden">
-                <div className="px-5 py-3 border-b border-gray-700">
+                <div className="px-5 py-3 border-b border-white/10">
                   <h3 className="text-white font-bold">{activeCategory}</h3>
                 </div>
                 {CATEGORIES[activeCategory as keyof typeof CATEGORIES].map((skillName, i, arr) => {
                   const status = getSkillStatus(selectedAthlete, activeCategory, skillName)
                   return (
                     <div key={skillName} onClick={() => toggleSkill(activeCategory, skillName)}
-                      className={`flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-gray-700/30 transition ${i < arr.length - 1 ? 'border-b border-gray-700' : ''}`}>
+                      className={`flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-white/5 transition ${i < arr.length - 1 ? 'border-b border-white/10' : ''}`}>
                       <span className="text-white text-sm">{skillName}</span>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusStyles[status]}`}>{status}</span>
                     </div>

@@ -145,7 +145,7 @@ export default function MyTeamPage() {
         <div className="space-y-2">
           {filtered.map(athlete => (
             <div key={athlete.id} className="card overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-gray-700/20 transition"
+              <div className="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-white/5 transition"
                 onClick={() => setExpanded(expanded === athlete.id ? null : athlete.id)}>
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-red-600/20 border border-red-700/40 rounded-full flex items-center justify-center text-red-400 font-bold text-sm shrink-0">
@@ -167,7 +167,7 @@ export default function MyTeamPage() {
               </div>
 
               {expanded === athlete.id && (
-                <div className="px-5 pb-5 border-t border-gray-700 pt-4">
+                <div className="px-5 pb-5 border-t border-white/10 pt-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                     {[
                       { label: 'Position', value: athlete.position },

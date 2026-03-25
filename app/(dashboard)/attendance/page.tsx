@@ -115,10 +115,10 @@ export default function AttendancePage() {
         <div className="card overflow-hidden mb-4">
           {athletes.map((athlete, i) => (
             <div key={athlete.id}
-              className={`flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-gray-700/30 transition ${i < athletes.length - 1 ? 'border-b border-gray-700' : ''}`}
+              className={`flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-white/5 transition ${i < athletes.length - 1 ? 'border-b border-white/10' : ''}`}
               onClick={() => toggle(athlete.id)}>
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                <div className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                   {athlete.name.charAt(0).toUpperCase()}
                 </div>
                 <span className="text-white font-medium">{athlete.name}</span>

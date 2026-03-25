@@ -162,7 +162,7 @@ export default function DashboardPage() {
             const hasAttendance = !!sessionOnDay(d)
             const isPast = d < today && !isToday
             return (
-              <div key={i} className={`rounded-xl p-2 text-center transition ${isToday ? 'bg-red-600/20 border border-red-600/50' : 'bg-gray-800'}`}>
+              <div key={i} className={`rounded-xl p-2 text-center transition ${isToday ? 'bg-red-600/20 border border-red-600/50' : 'bg-white/5'}`}>
                 <p className={`text-xs font-semibold mb-1 ${isToday ? 'text-red-400' : 'text-gray-500'}`}>{DAYS[(i + 1) % 7]}</p>
                 <p className={`text-sm font-bold ${isToday ? 'text-white' : isPast ? 'text-gray-600' : 'text-gray-300'}`}>
                   {d.getDate()}
@@ -200,7 +200,7 @@ export default function DashboardPage() {
                   <span>{row.label}</span>
                   <span className="font-semibold text-white">{row.count}</span>
                 </div>
-                <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                   <motion.div
                     className={`h-full ${row.color} rounded-full`}
                     initial={{ width: 0 }}
@@ -241,7 +241,7 @@ export default function DashboardPage() {
                 const present = session.attendance?.filter((a: any) => a.status === 'Present').length || 0
                 const pct = totalAthletes > 0 ? Math.round((present / totalAthletes) * 100) : 0
                 return (
-                  <div key={session.id} className={`flex items-center justify-between py-3 ${i < 5 ? 'border-b border-gray-700' : ''}`}>
+                  <div key={session.id} className={`flex items-center justify-between py-3 ${i < 5 ? 'border-b border-white/10' : ''}`}>
                     <div>
                       <p className="text-white text-sm font-medium">
                         {new Date(session.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
@@ -249,7 +249,7 @@ export default function DashboardPage() {
                       <p className="text-gray-500 text-xs">{present}/{totalAthletes} present</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                      <div className="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
                         <div className={`h-full rounded-full transition-all ${pct >= 80 ? 'bg-green-500' : pct >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
                           style={{ width: `${pct}%` }} />
                       </div>
@@ -276,7 +276,7 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-0">
               {competitions.slice(0, 4).map((c, i) => (
-                <div key={c.id} className={`flex items-center justify-between py-3 ${i < 3 ? 'border-b border-gray-700' : ''}`}>
+                <div key={c.id} className={`flex items-center justify-between py-3 ${i < 3 ? 'border-b border-white/10' : ''}`}>
                   <div>
                     <p className="text-white text-sm font-semibold">{c.name}</p>
                     <p className="text-gray-500 text-xs">{c.division || '—'} · {c.location || '—'}</p>
@@ -308,7 +308,7 @@ export default function DashboardPage() {
               { label: 'Build Routine', icon: '💃', href: '/routine', desc: 'Place athletes' },
             ].map(action => (
               <Link key={action.label} href={action.href}
-                className="flex items-start gap-3 p-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-500 rounded-xl transition group">
+                className="flex items-start gap-3 p-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl transition group">
                 <span className="text-xl mt-0.5">{action.icon}</span>
                 <div>
                   <p className="text-white text-xs font-semibold group-hover:text-red-400 transition leading-tight">{action.label}</p>

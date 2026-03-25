@@ -112,7 +112,7 @@ export default function CompetitionsPage() {
         <div className="space-y-3">
           {competitions.map(c => (
             <div key={c.id} className="card overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-gray-700/20 transition"
+              <div className="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-white/5 transition"
                 onClick={() => setExpanded(expanded === c.id ? null : c.id)}>
                 <div className="flex items-center gap-4">
                   <div className="text-2xl">🏆</div>
@@ -130,9 +130,9 @@ export default function CompetitionsPage() {
                 </div>
               </div>
               {expanded === c.id && (
-                <div className="px-5 pb-5 border-t border-gray-700 pt-4">
+                <div className="px-5 pb-5 border-t border-white/10 pt-4">
                   {c.judges_notes ? (
-                    <div className="bg-gray-800 rounded-xl p-4 mb-4">
+                    <div className="bg-white/5 rounded-xl p-4 mb-4">
                       <p className="text-xs text-gray-500 mb-1 font-semibold uppercase tracking-wide">Judge's Notes</p>
                       <p className="text-gray-300 text-sm">{c.judges_notes}</p>
                     </div>

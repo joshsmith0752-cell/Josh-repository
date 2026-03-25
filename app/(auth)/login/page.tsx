@@ -36,11 +36,11 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-800 flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-2xl mb-4 shadow-lg shadow-red-600/40">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-2xl mb-4 shadow-lg shadow-red-600/50">
             <span className="text-3xl">📣</span>
           </div>
           <h1 className="text-4xl font-extrabold text-white tracking-tight">CheerHub</h1>
@@ -48,15 +48,15 @@ export default function AuthPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="card rounded-2xl shadow-2xl overflow-hidden" style={{ borderColor: 'rgba(185,28,28,0.35)' }}>
           {/* Tabs */}
-          <div className="flex border-b border-gray-700">
+          <div className="flex border-b border-[rgba(60,60,80,0.5)]">
             {(['login', 'register'] as const).map(m => (
               <button key={m} onClick={() => { setMode(m); setError(''); setSuccess('') }}
                 className={`flex-1 py-4 text-sm font-semibold transition-all ${
                   mode === m
                     ? 'bg-red-600 text-white shadow-inner'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}>
                 {m === 'login' ? 'Sign In' : 'Register'}
               </button>

@@ -111,7 +111,7 @@ export default function PracticesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-gray-800 rounded-xl mb-5 w-fit">
+      <div className="flex gap-1 p-1 bg-white/5 rounded-xl mb-5 w-fit">
         {(['sessions', 'templates'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition capitalize ${
@@ -158,7 +158,7 @@ export default function PracticesPage() {
             </div>
             <div className="space-y-2">
               {blocks.map((block, i) => (
-                <div key={block.id} className={`bg-gray-800 border-l-4 ${BLOCK_COLORS[i % BLOCK_COLORS.length]} rounded-r-xl p-3`}>
+                <div key={block.id} className={`bg-white/5 border-l-4 ${BLOCK_COLORS[i % BLOCK_COLORS.length]} rounded-r-xl p-3`}>
                   <div className="flex gap-2 items-center">
                     <input value={block.label} onChange={e => updateBlock(block.id, 'label', e.target.value)}
                       placeholder="Block name" className="input flex-1 py-1.5 text-sm" />
@@ -203,10 +203,10 @@ export default function PracticesPage() {
         <div className="space-y-3">
           {filtered.map(practice => (
             <div key={practice.id} className="card overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-gray-700/20 transition"
+              <div className="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-white/5 transition"
                 onClick={() => setExpanded(expanded === practice.id ? null : practice.id)}>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-gray-700 rounded-xl flex items-center justify-center text-xl shrink-0">📋</div>
+                  <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-xl shrink-0">📋</div>
                   <div>
                     <p className="text-white font-semibold">{practice.title}</p>
                     <p className="text-gray-400 text-xs mt-0.5">
@@ -225,7 +225,7 @@ export default function PracticesPage() {
                   {practice.blocks && practice.blocks.length > 0 && (
                     <div className="mb-4 space-y-2">
                       {practice.blocks.map((block, i) => (
-                        <div key={block.id} className={`bg-gray-800 border-l-4 ${BLOCK_COLORS[i % BLOCK_COLORS.length]} rounded-r-xl px-4 py-3`}>
+                        <div key={block.id} className={`bg-white/5 border-l-4 ${BLOCK_COLORS[i % BLOCK_COLORS.length]} rounded-r-xl px-4 py-3`}>
                           <div className="flex items-center justify-between">
                             <span className="text-white font-medium text-sm">{block.label}</span>
                             <span className="text-gray-400 text-xs">{block.duration_minutes} min</span>
@@ -236,7 +236,7 @@ export default function PracticesPage() {
                     </div>
                   )}
                   {practice.notes && (
-                    <div className="bg-gray-800 rounded-xl p-3 mb-4">
+                    <div className="bg-white/5 rounded-xl p-3 mb-4">
                       <p className="text-xs text-gray-500 mb-1">Session Notes</p>
                       <p className="text-gray-300 text-sm">{practice.notes}</p>
                     </div>
